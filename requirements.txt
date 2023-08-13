@@ -1,0 +1,9 @@
+pyarrow>=8.0.0
+pandas>=1.5.1
+numpy>=1.21.0
+tensorflow>=2.10.0
+matplotlib>=3.2.0
+scikit-learn>=1.2.0
+#fastapi>=0.100.0
+#univcorn>=0.21.0
+streamlit>=1.21.0
