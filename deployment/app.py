@@ -1,40 +1,50 @@
 import sys
-sys.path.insert(0, '../src/')
+sys.path.append('../src/')
 
 from libs import *
+from config import *
 from data_processing import *
 import streamlit as st
 
-
-
 #@st.cache()
 
-model = keras.models.load_model('../models/transformer.keras')
-scaler = joblib.load('../models/scaler.gz')
+model = keras.models.load_model(path_model)
+scaler = joblib.load(path_scaler)
 with open('../data/raw/meta.json', 'r') as f:
     meta = json.load(f)
 features = meta['data_cols'] + meta['error_cols'] + meta['maint_cols']
 targets = ['failure', 'maint', 'error', 'anomaly']
+params = dict(
+    window = 24,
+    timerange = 8760,
+    split = 7320,
+    IDs = 100,
+)
 
-window = 24
+def training(url_data, url_label, url_meta, **kwargs):
+    '''
+    1/ Merge all data from urls
+    2/ scale and transform data to prepare for training
+    3/ save processed file (if needed)
+    4/ 
+    '''
+    # merge all data from url
+    X_train, y_train = process(url_data, url_label, url_meta, **kwargs)
 
-def prediction(input_data, features, label):
-    X = data_transform(
-        input_data, features, label, 
-        scaler, window, is_label=False
-        )
-    #preds = model.predict(X)
-    #classes = np.argmax(preds, axis = 1)
-    classes = model.predict_classes(X, verbose=1, batch_size=128)
-    st.write(classes)
+
+def check_input(input):
+    pass
 
 
 def main():
-    uploaded_file = st.file_uploader("Choose a file")
-    if uploaded_file is not None:
-        input = pd.read_csv(uploaded_file)
-        #st.write(input)
-        prediction(input, features, targets[0])
+    st.title("Predictive maintenance Home Page")
+    #url_data = st.input_text('url of data: ')
+    #url_label = st.input_text('url of label: ')
+    #url_meta = st.input_text('url of meta:')
+
+
+    st.sidebar.success("You are currently viewing main page")
+
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,5 @@
 from libs import *
+from config import *
 from read_data import *
 
 
@@ -83,6 +84,44 @@ def data_transform(data, features, label, scaler, window, is_label=False):
     data_final = np.concatenate(list(gen_data)).astype(np.float32)
 
     return data_final
+
+
+def process_raw_data(url_data, url_label, url_meta, **kwargs):
+    X, y, features, targets = merge_data(url_data, url_label, url_meta)
+
+    X_train, X_test, y_train, y_test = create_train_test(
+        X, y, kwargs['IDs'], kwargs['split'], kwargs['timerange']
+        )
+    
+    scaler = get_scaling(X_train, features, '../models/scaler.gz')
+    
+    #X_train_final = data_transform(
+    #    X_train, features, targets[0],
+    #    scaler, window, is_label=False
+    #)
+    #y_train_final = data_transform(
+    #    y_train, features, targets[0],
+    #    scaler, window, is_label=True
+    #)
+    #X_test_final = data_transform(
+    #    X_test, features, targets[0],
+    #    scaler, window, is_label=False
+    #)
+    #y_test_final = data_transform(
+    #    y_test, features, targets[0],
+    #    scaler, window, is_label=True
+    #)
+
+    with open(path_proc_X_train, 'wb') as f1:
+        pkl.dump(X_train, f1)
+    with open(path_proc_X_test, 'wb') as f2:
+        pkl.dump(X_test, f2)
+    with open(path_proc_y_train, 'wb') as f3:
+        pkl.dump(y_train, f3)
+    with open(path_proc_y_test, 'wb') as f4:
+        pkl.dump(y_test, f4)
+
+    return X_train_final, y_train_final
 
 
 if __name__ == '__main__':
